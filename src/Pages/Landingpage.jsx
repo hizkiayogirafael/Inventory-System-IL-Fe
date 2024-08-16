@@ -33,13 +33,6 @@ const Landingpage = () => {
               Login
               <IoMdLogIn className="h-[30px]" />
             </Link>
-            <Link
-              className="w-[30%] px-1 py-2 bg-white flex flex-row rounded-[30px] justify-center mt-2 text-[20px] font-semibold gap-2"
-              to="/AddItem"
-            >
-              Test barang lek
-              <IoMdLogIn className="h-[30px]" />
-            </Link>
           </div>
         </div>
         {/* Layout Kanan */}
