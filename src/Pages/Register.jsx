@@ -134,6 +134,11 @@ const Register = () => {
                 {...register("id_perusahaan", { required: true })}
                 className="w-full px-2 py-2 border border-stone-950 rounded-md text-[12px] font-medium mb-3"
               >
+                {errors.company && (
+                  <p className="text-red-500 text-[10px]">
+                    Company is required
+                  </p>
+                )}
                 <option value="">Choose Company</option>
                 {perusahaan?.map((perusahaan, index) => {
                   return (
