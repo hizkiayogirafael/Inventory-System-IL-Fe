@@ -11,15 +11,6 @@ const InventoriAdmin = () => {
   //state untuk menampung data barang
   const [data, setData] = useState([]);
 
-  //state untuk menyimpan kategori
-  const [kategori, setKategori] = useState([]);
-  const [selectedKategori, setSelectedKategori] = useState("");
-
-  // Filter data barang berdasarkan kategori yang dipilih
-  const filteredData = selectedKategori
-    ? data.filter((item) => item.nama_kategori === selectedKategori)
-    : data;
-
   //Function untuk mengambil data barang dari API//2
   const getData = async () => {
     try {
@@ -30,10 +21,40 @@ const InventoriAdmin = () => {
     }
   };
 
-  //use effcect untuk mengambil data
+  //state untuk menyimpan kategori
+  const [kategori, setKategori] = useState([]);
+  const [selectedKategori, setSelectedKategori] = useState("");
+
+  //function get kategori
+  const getKategori = async () => {
+    try {
+      const response = await axios.get("http://localhost:3000/options");
+      setKategori(response.data.kategori);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // Filter data barang berdasarkan kategori yang dipilih
+  const filteredData = selectedKategori
+    ? data.filter((item) => item.nama_kategori === selectedKategori)
+    : data;
+
+  //use effcect untuk mengambil data barang dan kategori
   useEffect(() => {
     getData();
+    getKategori();
   }, []);
+
+  // Delete barang ---
+  const deleteBarang = async (id) => {
+    try {
+      await axios.delete(`http://localhost:3000/api/barang/${id}`);
+      getData(); // Refresh data setelah delete
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <>
@@ -69,9 +90,9 @@ const InventoriAdmin = () => {
             <h1 className="font-poppins text-[25px] font-medium my-5 text-black">
               Stock List
             </h1>
-            <div>
+            <div className="flex flex-row gap-4">
               {/* Filter Kategori */}
-              <div className="flex flex-row items-center font-poppins mb-4">
+              <div className="flex items-center font-poppins mb-4">
                 <select
                   value={selectedKategori}
                   onChange={(e) => setSelectedKategori(e.target.value)}
