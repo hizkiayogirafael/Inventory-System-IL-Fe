@@ -68,7 +68,7 @@ const AddItem = () => {
   return (
     <>
       {/* Layout Utama */}
-      <div className="w-screen h-screen overflow-x-hidden bg-[#EAEAEA] flex flex-row">
+      <div className="w-screen h-screen overflow-x-hidden bg-[#EAEAEA] flex flex-row font-poppins">
         <SidebarAdmin />
         {/* Content Dashboard */}
         <div className="w-[82%] float-right flex flex-col ml-[18%] mr-10 pl-2">
@@ -90,7 +90,7 @@ const AddItem = () => {
             <input
               type="text"
               {...register("nama_barang", { required: true })}
-              className="w-full px-2 py-2 shadow-md rounded-md text-[12px] font-medium mb-2"
+              className="w-full px-2 py-2 shadow-md rounded-md font-medium mb-2 bg-white text-slate-600 text-[15px] outline-none"
             />
             {/* Supplier */}
             <label
@@ -101,7 +101,7 @@ const AddItem = () => {
             </label>
             <select
               {...register("id_supplier", { required: true })}
-              className="w-full px-2 py-2 shadow-md rounded-md text-[12px] font-medium mb-2"
+              className="w-full px-2 py-2 shadow-md rounded-md  bg-white text-slate-600 text-[15px] outline-none font-medium mb-2"
             >
               <option value="">Choose Supplier</option>
               {supplier?.map((supplier, index) => (
@@ -120,7 +120,7 @@ const AddItem = () => {
             <input
               type="date"
               {...register("tanggal_pembelian_barang", { required: true })}
-              className="w-full px-2 py-2 shadow-md rounded-md text-[12px] font-medium mb-2"
+              className="w-full px-2 py-2 shadow-md rounded-md  bg-white text-slate-600 text-[15px] outline-none font-medium mb-2"
             />
             {/* Kategori */}
             <label
@@ -131,7 +131,7 @@ const AddItem = () => {
             </label>
             <select
               {...register("id_kategori", { required: true })}
-              className="h-[40px] w-full px-3 py-2 shadow-md rounded-md text-[12px] font-medium mb-2 font-poppins"
+              className="h-[40px] w-full px-3 py-2 shadow-md rounded-md  bg-white text-slate-600 text-[15px] outline-none font-medium mb-2 font-poppins"
             >
               <option value="">Choose Category</option>
               {kategori?.map((kategori, index) => (
@@ -150,7 +150,7 @@ const AddItem = () => {
             <input
               type="number"
               {...register("jumlah", { required: true })}
-              className="w-full px-2 py-2 shadow-md rounded-md text-[12px] font-medium mb-2"
+              className="w-full px-2 py-2 shadow-md rounded-md  bg-white text-slate-600 text-[15px] outline-none font-medium mb-2"
             />
             {/* Serial Number */}
             {Array.from({ length: jumlah }).map((_, index) => (
@@ -168,7 +168,7 @@ const AddItem = () => {
                   onChange={(e) =>
                     handleSerialNumberChange(index, e.target.value)
                   }
-                  className="w-full px-2 py-2 shadow-md rounded-md text-[12px] font-medium mb-2"
+                  className="w-full px-2 py-2 shadow-md rounded-md  bg-white text-slate-600 text-[15px] outline-none font-medium mb-2"
                 />
               </div>
             ))}
@@ -181,7 +181,7 @@ const AddItem = () => {
             </label>
             <select
               {...register("id_perusahaan", { required: true })}
-              className="h-[40px] w-full px-3 py-2 shadow-md rounded-md text-[12px] font-medium mb-2 font-poppins"
+              className="h-[40px] w-full px-3 py-2 shadow-md rounded-md  bg-white text-slate-600 text-[15px] outline-none font-medium mb-2 font-poppins"
             >
               <option value="">Choose Ownership</option>
               {perusahaan?.map((perusahaan, index) => (
@@ -200,10 +200,10 @@ const AddItem = () => {
             <input
               type="text"
               {...register("lokasi_barang", { required: true })}
-              className="w-full px-2 py-2 shadow-md rounded-md text-[12px] font-medium mb-2"
+              className="w-full px-2 py-2 shadow-md rounded-md  bg-white text-slate-600 text-[15px] outline-none font-medium mb-2"
             />
             {/* Status */}
-            <label
+            {/* <label
               htmlFor="id_status_barang"
               className="flex text-[15px] font-poppins mb-3"
             >
@@ -219,7 +219,7 @@ const AddItem = () => {
                   {statusBarang.status_barang}
                 </option>
               ))}
-            </select>
+            </select> */}
             {/* Add Data */}
             <button
               type="submit"

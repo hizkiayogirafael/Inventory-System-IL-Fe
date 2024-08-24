@@ -4,7 +4,7 @@ import Landingpage from "./Pages/Landingpage";
 import Login from "./Pages/Login";
 import DashboardUser from "./Pages/Client/DashboardUser";
 import Register from "./Pages/Register";
-import Inventory from "./Pages/Client/Inventory";
+import Inventory from "./Pages/Client/InventoryUser";
 import Loaning from "./Pages/Client/Loaning";
 import DashboardAdmin from "./Pages/Admin/DashboardAdmin";
 import InventoryAdm from "./Pages/Admin/InventoryAdm";
@@ -14,8 +14,10 @@ import UserAdm from "./Pages/Admin/UserAdm";
 import ProfileUser from "./Pages/Client/ProfileUser";
 import AddItem from "./Pages/Admin/AddItem";
 import AddUser from "./Pages/Admin/AddUser";
+import InventoryUser from "./Pages/Client/InventoryUser";
 import { useAuth } from "./store/auth";
 import { jwtDecode } from "jwt-decode";
+import InventoriAdmin from "./Pages/Admin/InventoriAdmin";
 
 const App = () => {
   const { loginResponse } = useAuth();
@@ -41,6 +43,7 @@ const App = () => {
         <Route path="/ProfileAdm" element={<ProfileAdm />} />
         <Route path="/AddItem" element={<AddItem />} />
         <Route path="/AddUser" element={<AddUser />} />
+        <Route path="/InventoriAdmin" element={<InventoriAdmin />} />
       </Routes>
     );
   }
@@ -49,7 +52,7 @@ const App = () => {
     return (
       <Routes>
         <Route path="/" element={<DashboardUser />} />
-        <Route path="/Inventory" element={<Inventory />} />
+        <Route path="/InventoryUser" element={<InventoryUser />} />
         <Route path="/Loaning" element={<Loaning />} />
         <Route path="/ProfileUser" element={<ProfileUser />} />
       </Routes>
