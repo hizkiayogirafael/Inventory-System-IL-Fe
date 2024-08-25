@@ -43,6 +43,7 @@ const InventoryAdm = () => {
     },
   });
 
+  //nomor seri
   const { fields, append, remove } = useFieldArray({
     control,
     name: "nomor_seri",

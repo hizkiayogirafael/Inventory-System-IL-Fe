@@ -7,7 +7,9 @@ import { CgProfile } from "react-icons/cg";
 import SidebarAdmin from "../../Components/SidebarAdmin";
 import { IoMdAddCircle } from "react-icons/io";
 import { formatDate } from "../../utils";
-import { toast } from "react-toastify";
+import { FiEdit } from "react-icons/fi";
+import { MdDelete } from "react-icons/md";
+import { IoOpenOutline } from "react-icons/io5";
 
 const InventoriAdmin = () => {
   //state untuk menampung data barang
@@ -109,6 +111,22 @@ const InventoriAdmin = () => {
   };
 
   //serial number section -------
+  //state untuk menyimpan serial number yang akan ditampilkan
+  const [serialNumbers, setSerialNumbers] = useState([]);
+
+  //handle ketika serial number button di click
+  const handleSerialNumberClick = async (id_barang) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/api/barang/serial-number/${id_barang}`
+      );
+      console.log("Response Data: ", response.data.serialNumbers);
+      setSerialNumbers(response.data.serialNumbers);
+      document.getElementById("my_modal_2").showModal();
+    } catch (error) {
+      console.error("Gagal mengambil serial numbers:", error);
+    }
+  };
 
   return (
     <>
@@ -205,22 +223,26 @@ const InventoriAdmin = () => {
                     <td className="px-4 py-3">{data?.nama_kategori}</td>
                     <td className="px-4 py-3">{data?.lokasi_barang}</td>
                     <td className="px-4 py-3">
-                      <button className="ml-2 text-green-600 hover:text-green-800">
-                        Serial Numbers
+                      <button
+                        className="btn text-white"
+                        onClick={() => handleSerialNumberClick(data.id_barang)}
+                      >
+                        Open SN
+                        <IoOpenOutline className="h-[20px] text-white" />
                       </button>
                     </td>
                     <td className="px-4 py-3">
                       <button
-                        className="text-blue-600 hover:text-blue-800"
+                        className="text-white bg-black px-3 rounded-md py-2 hover:text-blue-800"
                         onClick={() => openEditModal(data)}
                       >
-                        Update
+                        <FiEdit />
                       </button>
                       <button
-                        className="ml-2 text-red-600 hover:text-red-800"
+                        className="ml-2 text-white bg-black px-3 rounded-md py-2 hover:text-red-800"
                         onClick={() => deleteBarang(data?.id_barang)}
                       >
-                        Delete
+                        <MdDelete />
                       </button>
                     </td>
                   </tr>
@@ -341,6 +363,63 @@ const InventoriAdmin = () => {
               Cancel
             </button>
           </form>
+        </div>
+      </dialog>
+      {/* Modal Serial Number */}
+      <dialog id="my_modal_2" className="modal">
+        <div className="modal-box flex flex-col bg-white text-black">
+          <div className="flex flex-row items-center gap-2 justify-between">
+            <h1 className="font-poppins font-bold text-[20px] italic">
+              Serial Number
+            </h1>
+            <div className="flex flex-row gap-2">
+              <Link className="font-poppins text-white bg-black px-2 py-1 rounded-md">
+                Add
+              </Link>
+              <button
+                className="text-white bg-black font-poppins px-2 rounded-md"
+                onClick={() => document.getElementById("my_modal_2").close()}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+          {serialNumbers.length > 0 ? (
+            <table className="min-w-full bg-white border rounded-lg shadow-md mt-4 font-poppins">
+              <thead>
+                <tr className="bg-gray-200 text-gray-700">
+                  <th className="px-4 py-3 text-left">No</th>
+                  <th className="px-4 py-3 text-left">Serial Number</th>
+                  <th className="px-4 py-3 text-left">Status</th>
+                  <th className="px-4 py-3 text-left">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {serialNumbers.map((serial, index) => (
+                  <tr
+                    key={index}
+                    className="border-b border-gray-200 hover:bg-gray-50"
+                  >
+                    <td className="px-4 py-3 text-left">{index + 1}</td>
+                    <td className="px-4 py-3 text-left">{serial.nomor_seri}</td>
+                    <td className="px-4 py-3 text-left">
+                      {serial.status_serial}
+                    </td>
+                    <td className="px-4 py-3">
+                      <button className="text-white bg-black px-3 rounded-md py-2 hover:text-blue-800">
+                        <FiEdit />
+                      </button>
+                      <button className="ml-2 text-white bg-black px-3 rounded-md py-2 hover:text-red-800">
+                        <MdDelete />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p>No serial numbers available</p>
+          )}
         </div>
       </dialog>
     </>
