@@ -47,7 +47,7 @@ const AddItem = () => {
         console.log(response);
         alert("Barang berhasil ditambahkan!");
         reset(); // Reset form setelah berhasil menambahkan barang
-        navigate("/InventoryAdm"); // Redirect ke halaman inventory admin
+        navigate("/InventoriAdmin"); // Redirect ke halaman inventory admin
       }
     } catch (error) {
       console.error("Gagal menambahkan barang:", error);
@@ -79,7 +79,7 @@ const AddItem = () => {
               <CgProfile className="h-[30px]" />
             </Link>
           </div>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={handleSubmit(onSubmit)} className="text-black">
             {/* Nama */}
             <label
               htmlFor="nama_barang"

@@ -102,7 +102,6 @@ const InventoriAdmin = () => {
       );
       getData(); // Refresh data setelah update
       document.getElementById("my_modal_1").close(); // Tutup modal
-      alert("Data berhasil diupdate");
       reset();
     } catch (error) {
       console.log(error);
@@ -127,6 +126,76 @@ const InventoriAdmin = () => {
       console.error("Gagal mengambil serial numbers:", error);
     }
   };
+
+  //function delete serial number
+  const deleteSerialNumber = async (id_serial) => {
+    try {
+      await axios.delete(
+        `http://localhost:3000/api/barang/serial-number/${id_serial}`
+      );
+
+      // Perbarui state serialNumbers setelah penghapusan
+      setSerialNumbers((prevSerialNumbers) =>
+        prevSerialNumbers.filter((serial) => serial.id_serial !== id_serial)
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  //Function Edit Serial Number
+  const editSerialNumber = (serialNumber) => {
+    // Simpan serial number yang sedang diedit ke dalam state
+    setCurrentData(serialNumber);
+
+    // Set value form untuk serial number
+    setValues("nomor_seri", serialNumber.nomor_seri);
+    setValues("status_serial", serialNumber.status_serial);
+
+    // Tutup modal serial number
+    document.getElementById("my_modal_2").close();
+
+    // Buka modal edit serial number
+    document.getElementById("my_modal_3").showModal();
+  };
+
+  //update serial number
+  const onSubmitSerialNumber = async (data) => {
+    try {
+      await axios.put(
+        `http://localhost:3000/api/barang/serial-number/${currentData.id_serial}`,
+        data
+      );
+
+      // Refresh the serial numbers list after update
+      setSerialNumbers((prevSerialNumbers) =>
+        prevSerialNumbers.map((serial) =>
+          serial.id_serial === currentData.id_serial
+            ? { ...serial, ...data }
+            : serial
+        )
+      );
+
+      // Tutup modal edit serial number
+      document.getElementById("my_modal_3").close();
+
+      // Buka kembali modal serial number
+      document.getElementById("my_modal_2").showModal();
+
+      resets(); // Reset the form
+    } catch (error) {
+      console.error("Failed to update serial number:", error);
+    }
+  };
+
+  // react-hook-form untuk update serial number
+  const {
+    register: registers,
+    handleSubmit: handleSubmits,
+    reset: resets,
+    setValue: setValues,
+    formState: formStates,
+  } = useForm();
 
   return (
     <>
@@ -159,16 +228,16 @@ const InventoriAdmin = () => {
             />
           </div>
           <div className="flex flex-row justify-between items-center font-poppins">
-            <h1 className="font-poppins text-[25px] font-medium my-5 text-black">
-              Stock List
+            <h1 className="font-poppins text-[25px] font-bold my-5 text-black">
+              STOCK LIST
             </h1>
             <div className="flex flex-row gap-4">
               {/* Filter Kategori */}
-              <div className="flex items-center font-poppins mb-4">
+              <div className="flex items-center font-poppins">
                 <select
                   value={selectedKategori}
                   onChange={(e) => setSelectedKategori(e.target.value)}
-                  className="bg-black text-white flex flex-row items-center gap-2 rounded-xl px-5 py-1 shadow-lg"
+                  className="bg-black text-white flex flex-row items-center gap-2 rounded-xl px-5 py-1 shadow-lg appearance-none"
                 >
                   <option value="">All Categories</option>
                   {kategori.map((kategori) => (
@@ -192,10 +261,10 @@ const InventoriAdmin = () => {
             </div>
           </div>
           {/* Inventory List */}
-          <div className="w-full font-poppins px-2 py-2  rounded-md shadow-md text-black">
-            <table className="w-full border-collapse">
+          <div className="w-full font-poppins px-2 py-2 rounded-xl shadow-md text-black bg-white">
+            <table className="w-full border-collapse bg-white ">
               <thead>
-                <tr className="bg-gray-200 text-gray-700">
+                <tr className="rounded-md">
                   <th className="px-4 py-3 text-left">No</th>
                   <th className="px-4 py-3 text-left">Name</th>
                   <th className="px-4 py-3 text-left">Quantity</th>
@@ -254,7 +323,7 @@ const InventoriAdmin = () => {
       </div>
       {/* Update Modal */}
       <dialog id="my_modal_1" className="modal">
-        <div className="modal-box">
+        <div className="modal-box bg-white text-black font-poppins">
           <h1 className="text-[20px] pb-2">Update Data</h1>
           <form onSubmit={handleSubmit(onUpdate)}>
             {/* Nama */}
@@ -385,7 +454,7 @@ const InventoriAdmin = () => {
             </div>
           </div>
           {serialNumbers.length > 0 ? (
-            <table className="min-w-full bg-white border rounded-lg shadow-md mt-4 font-poppins">
+            <table className="min-w-full bg-white border shadow-md mt-4 font-poppins">
               <thead>
                 <tr className="bg-gray-200 text-gray-700">
                   <th className="px-4 py-3 text-left">No</th>
@@ -406,10 +475,16 @@ const InventoriAdmin = () => {
                       {serial.status_serial}
                     </td>
                     <td className="px-4 py-3">
-                      <button className="text-white bg-black px-3 rounded-md py-2 hover:text-blue-800">
+                      <button
+                        className="text-white bg-black px-3 rounded-md py-2 hover:text-blue-800"
+                        onClick={() => editSerialNumber(serial)}
+                      >
                         <FiEdit />
                       </button>
-                      <button className="ml-2 text-white bg-black px-3 rounded-md py-2 hover:text-red-800">
+                      <button
+                        className="ml-2 text-white bg-black px-3 rounded-md py-2 hover:text-red-800"
+                        onClick={() => deleteSerialNumber(serial.id_serial)}
+                      >
                         <MdDelete />
                       </button>
                     </td>
@@ -420,6 +495,56 @@ const InventoriAdmin = () => {
           ) : (
             <p>No serial numbers available</p>
           )}
+        </div>
+      </dialog>
+      {/* Edit Serial Number Modal */}
+      <dialog id="my_modal_3" className="modal">
+        <div className="modal-box">
+          <h1>Edit Serial Number</h1>
+          <form onSubmit={handleSubmits(onSubmitSerialNumber)}>
+            {/* Nama */}
+            <label
+              htmlFor="nomor_seri"
+              className="flex text-[13px] font-poppins mb-3"
+            >
+              Serial Number
+            </label>
+            <input
+              type="text"
+              {...registers("nomor_seri", { required: true })}
+              className="w-full px-2 py-2 shadow-md rounded-md font-medium mb-2 bg-white text-slate-600 text-[15px] outline-none"
+            />
+            {/* Status Serial */}
+            <label
+              htmlFor="status_serial"
+              className="flex text-[15px] font-poppins mb-3"
+            >
+              Status
+            </label>
+            <select
+              {...registers("status_serial", { required: true })}
+              className="w-full px-2 py-2 shadow-md rounded-md  bg-white text-slate-600 text-[15px] outline-none font-medium mb-2"
+            >
+              <option value="Available">Available</option>
+              <option value="Maintenance">Maintenance</option>
+              <option value="Loaned">Loaned</option>
+            </select>
+            <div className="modal-action">
+              <button type="submit" className="btn">
+                Submit
+              </button>
+              <button
+                type="button"
+                className="btn"
+                onClick={() => {
+                  document.getElementById("my_modal_3").close();
+                  document.getElementById("my_modal_2").showModal();
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
         </div>
       </dialog>
     </>

@@ -40,7 +40,7 @@ const SidebarAdmin = () => {
           </Link>
           <Link
             className="mt-[10px] flex flex-row gap-3 text-[20px] px-10 mx-5 pb-2 items-center shadow-sm"
-            to="/InventoryAdm"
+            to="/InventoriAdmin"
           >
             <MdOutlineInventory2 />
             Inventory
