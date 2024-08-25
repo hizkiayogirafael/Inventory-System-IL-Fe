@@ -202,24 +202,6 @@ const AddItem = () => {
               {...register("lokasi_barang", { required: true })}
               className="w-full px-2 py-2 shadow-md rounded-md  bg-white text-slate-600 text-[15px] outline-none font-medium mb-2"
             />
-            {/* Status */}
-            {/* <label
-              htmlFor="id_status_barang"
-              className="flex text-[15px] font-poppins mb-3"
-            >
-              Status Barang
-            </label>
-            <select
-              {...register("id_status_barang", { required: true })}
-              className="h-[40px] w-full px-3 py-2 shadow-md rounded-md text-[12px] font-medium mb-2 font-poppins"
-            >
-              <option value="">Choose Status</option>
-              {statusBarang?.map((statusBarang, index) => (
-                <option key={index} value={statusBarang.id_status_barang}>
-                  {statusBarang.status_barang}
-                </option>
-              ))}
-            </select> */}
             {/* Add Data */}
             <button
               type="submit"

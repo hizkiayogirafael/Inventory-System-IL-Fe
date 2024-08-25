@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import axios from "axios";
 import ndp2 from "../../Assets/ndp2.png";
 import { Link } from "react-router-dom";
@@ -6,12 +7,13 @@ import { CgProfile } from "react-icons/cg";
 import SidebarAdmin from "../../Components/SidebarAdmin";
 import { IoMdAddCircle } from "react-icons/io";
 import { formatDate } from "../../utils";
+import { toast } from "react-toastify";
 
 const InventoriAdmin = () => {
   //state untuk menampung data barang
   const [data, setData] = useState([]);
 
-  //Function untuk mengambil data barang dari API//2
+  //Function untuk mengambil data barang dari API
   const getData = async () => {
     try {
       const response = await axios.get("http://localhost:3000/api/barang");
@@ -25,11 +27,13 @@ const InventoriAdmin = () => {
   const [kategori, setKategori] = useState([]);
   const [selectedKategori, setSelectedKategori] = useState("");
 
-  //function get kategori
-  const getKategori = async () => {
+  //function get kategori -> changed ke getOptions
+  const getOptions = async () => {
     try {
       const response = await axios.get("http://localhost:3000/options");
       setKategori(response.data.kategori);
+      setPerusahaan(response.data.perusahaan);
+      setSupplier(response.data.supplier);
     } catch (error) {
       console.log(error);
     }
@@ -43,7 +47,7 @@ const InventoriAdmin = () => {
   //use effcect untuk mengambil data barang dan kategori
   useEffect(() => {
     getData();
-    getKategori();
+    getOptions();
   }, []);
 
   // Delete barang ---
@@ -55,6 +59,56 @@ const InventoriAdmin = () => {
       console.log(error);
     }
   };
+
+  //update section---------
+  //state untuk menyimpan data yang akan diupdate
+  const [currentData, setCurrentData] = useState();
+
+  //state untuk menyimpan perusahaan dan supplier --> dilanjutkan dengan getData dari keduanya melalui getOptions
+  const [perusahaan, setPerusahaan] = useState([]);
+  const [supplier, setSupplier] = useState([]);
+
+  //Set React-hook-form untuk update data
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    formState: { errors },
+  } = useForm();
+
+  //Function untuk memunculkan value saat update di klik
+  const openEditModal = (data) => {
+    setCurrentData(data); // Simpan data yang sedang diedit ke state
+    setValue("nama_barang", data.nama_barang);
+    setValue("id_supplier", data.id_supplier); // Pastikan ini adalah id_supplier yang benar
+    setValue("id_kategori", data.id_kategori); // Gunakan id_kategori yang benar
+    setValue("tanggal_pembelian_barang", data.tanggal_pembelian_barang); // Pastikan format date sesuai
+    setValue("id_perusahaan", data.id_perusahaan); // Gunakan id_perusahaan yang benar
+    setValue("lokasi_barang", data.lokasi_barang);
+    document.getElementById("my_modal_1").showModal(); // Buka modal
+  };
+
+  //Function update data
+  const onUpdate = async (data) => {
+    console.log("Data yang dikirim:", data);
+    console.log("ID barang:", currentData.id_barang);
+    try {
+      await axios.put(
+        `http://localhost:3000/api/barang/${currentData.id_barang}`, // Pastikan menggunakan `id_barang` yang benar
+        data
+      );
+      getData(); // Refresh data setelah update
+      document.getElementById("my_modal_1").close(); // Tutup modal
+      alert("Data berhasil diupdate");
+      reset();
+    } catch (error) {
+      console.log(error);
+      alert("Gagal mengupdate data");
+    }
+  };
+
+  //serial number section -------
 
   return (
     <>
@@ -99,9 +153,12 @@ const InventoriAdmin = () => {
                   className="bg-black text-white flex flex-row items-center gap-2 rounded-xl px-5 py-1 shadow-lg"
                 >
                   <option value="">All Categories</option>
-                  {kategori.map((kat) => (
-                    <option key={kat.id_kategori} value={kat.nama_kategori}>
-                      {kat.nama_kategori}
+                  {kategori.map((kategori) => (
+                    <option
+                      key={kategori.id_kategori}
+                      value={kategori.nama_kategori}
+                    >
+                      {kategori.nama_kategori}
                     </option>
                   ))}
                 </select>
@@ -128,6 +185,7 @@ const InventoriAdmin = () => {
                   <th className="px-4 py-3 text-left">Ownership</th>
                   <th className="px-4 py-3 text-left">Buy Date</th>
                   <th className="px-4 py-3 text-left">Category</th>
+                  <th className="px-4 py-3 text-left">Location</th>
                   <th className="px-4 py-3 text-left">Serial Number</th>
                   <th className="px-4 py-3 text-left">Action</th>
                 </tr>
@@ -145,18 +203,17 @@ const InventoriAdmin = () => {
                       {formatDate(data?.tanggal_pembelian_barang)}
                     </td>
                     <td className="px-4 py-3">{data?.nama_kategori}</td>
+                    <td className="px-4 py-3">{data?.lokasi_barang}</td>
                     <td className="px-4 py-3">
-                      <button
-                        className="ml-2 text-green-600 hover:text-green-800"
-                        onClick={() =>
-                          handleSerialNumberClick(data?.serial_numbers)
-                        }
-                      >
+                      <button className="ml-2 text-green-600 hover:text-green-800">
                         Serial Numbers
                       </button>
                     </td>
                     <td className="px-4 py-3">
-                      <button className="text-blue-600 hover:text-blue-800">
+                      <button
+                        className="text-blue-600 hover:text-blue-800"
+                        onClick={() => openEditModal(data)}
+                      >
                         Update
                       </button>
                       <button
@@ -173,6 +230,119 @@ const InventoriAdmin = () => {
           </div>
         </div>
       </div>
+      {/* Update Modal */}
+      <dialog id="my_modal_1" className="modal">
+        <div className="modal-box">
+          <h1 className="text-[20px] pb-2">Update Data</h1>
+          <form onSubmit={handleSubmit(onUpdate)}>
+            {/* Nama */}
+            <label
+              htmlFor="nama_barang"
+              className="flex text-[13px] font-poppins mb-3"
+            >
+              Name
+            </label>
+            <input
+              type="text"
+              {...register("nama_barang", { required: true })}
+              className="w-full px-2 py-2 shadow-md rounded-md font-medium mb-2 bg-white text-slate-600 text-[15px] outline-none"
+            />
+            {/* Supplier */}
+            <label
+              htmlFor="id_supplier"
+              className="flex text-[15px] font-poppins mb-3"
+            >
+              Supplier
+            </label>
+            <select
+              {...register("id_supplier", { required: true })}
+              className="w-full px-2 py-2 shadow-md rounded-md  bg-white text-slate-600 text-[15px] outline-none font-medium mb-2"
+            >
+              <option value="">Choose Supplier</option>
+              {supplier?.map((supplier, index) => (
+                <option key={index} value={supplier.id_supplier}>
+                  {supplier.nama_supplier}
+                </option>
+              ))}
+            </select>
+            {/* Buy Date */}
+            <label
+              htmlFor="tanggal_pembelian_barang"
+              className="flex text-[15px] font-poppins mb-3"
+            >
+              Buy Date
+            </label>
+            <input
+              type="date"
+              {...register("tanggal_pembelian_barang", { required: true })}
+              className="w-full px-2 py-2 shadow-md rounded-md  bg-white text-slate-600 text-[15px] outline-none font-medium mb-2"
+            />
+            {/* Kategori */}
+            <label
+              htmlFor="id_kategori"
+              className="flex text-[15px] font-poppins mb-3"
+            >
+              Kategori
+            </label>
+            <select
+              {...register("id_kategori", { required: true })}
+              className="h-[40px] w-full px-3 py-2 shadow-md rounded-md  bg-white text-slate-600 text-[15px] outline-none font-medium mb-2 font-poppins"
+            >
+              <option value="">Choose Category</option>
+              {kategori?.map((kategori, index) => (
+                <option key={index} value={kategori.id_kategori}>
+                  {kategori.nama_kategori}
+                </option>
+              ))}
+            </select>
+            {/* Ownership */}
+            <label
+              htmlFor="id_perusahaan"
+              className="flex text-[15px] font-poppins mb-3"
+            >
+              Ownership
+            </label>
+            <select
+              {...register("id_perusahaan", { required: true })}
+              className="h-[40px] w-full px-3 py-2 shadow-md rounded-md  bg-white text-slate-600 text-[15px] outline-none font-medium mb-2 font-poppins"
+            >
+              <option value="">Choose Ownership</option>
+              {perusahaan?.map((perusahaan, index) => (
+                <option key={index} value={perusahaan.id_perusahaan}>
+                  {perusahaan.nama_perusahaan}
+                </option>
+              ))}
+            </select>
+            {/* Lokasi Barang */}
+            <label
+              htmlFor="lokasi_barang"
+              className="flex text-[15px] font-poppins mb-3"
+            >
+              Lokasi Barang
+            </label>
+            <input
+              type="text"
+              {...register("lokasi_barang", { required: true })}
+              className="w-full px-2 py-2 shadow-md rounded-md  bg-white text-slate-600 text-[15px] outline-none font-medium mb-2"
+            />
+            {/* Add Data */}
+            <button
+              type="submit"
+              className="flex font-poppins bg-black w-full py-2 mt-4 mb-4 rounded-md justify-center text-white"
+            >
+              Submit
+            </button>
+            {/* Cancel */}
+            <button
+              className="flex font-poppins bg-black w-full py-2 mt-4 mb-4 rounded-md justify-center text-white"
+              type="button"
+              onClick={() => document.getElementById("my_modal_1").close()}
+            >
+              Cancel
+            </button>
+          </form>
+        </div>
+      </dialog>
     </>
   );
 };
