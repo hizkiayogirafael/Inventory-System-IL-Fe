@@ -32,7 +32,7 @@ const SidebarUser = () => {
           <hr className="mx-10 mt-5" />
           <Link
             className="mt-[50px] flex flex-row gap-3 text-[20px] px-10 mx-5 pb-2 items-center shadow-sm"
-            to="/DashboardUser"
+            to="/"
           >
             <RxDashboard />
             Dashboard

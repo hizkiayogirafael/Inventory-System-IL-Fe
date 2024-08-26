@@ -55,6 +55,7 @@ const AddItem = () => {
     }
   };
 
+  // Function untuk menangani perubahan pada nomor seri
   const handleSerialNumberChange = (index, value) => {
     const updatedNomorSeri = [...nomorSeri];
     updatedNomorSeri[index] = value;

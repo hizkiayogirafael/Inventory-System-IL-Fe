@@ -14,6 +14,7 @@ import { IoOpenOutline } from "react-icons/io5";
 const InventoriAdmin = () => {
   //state untuk menampung data barang
   const [data, setData] = useState([]);
+  const [addSn, setAddSn] = useState();
 
   //Function untuk mengambil data barang dari API
   const getData = async () => {
@@ -83,15 +84,17 @@ const InventoriAdmin = () => {
   const openEditModal = (data) => {
     setCurrentData(data); // Simpan data yang sedang diedit ke state
     setValue("nama_barang", data.nama_barang);
-    setValue("id_supplier", data.id_supplier); // Pastikan ini adalah id_supplier yang benar
-    setValue("id_kategori", data.id_kategori); // Gunakan id_kategori yang benar
-    setValue("tanggal_pembelian_barang", data.tanggal_pembelian_barang); // Pastikan format date sesuai
-    setValue("id_perusahaan", data.id_perusahaan); // Gunakan id_perusahaan yang benar
+    setValue("id_supplier", data.id_supplier); // Pastikan id_supplier diambil dengan benar
+    setValue("nama_supplier", data.nama_supplier); // Set nama_supplier ke dalam form
+    setValue("id_kategori", data.id_kategori);
+    setValue("tanggal_pembelian_barang", data.tanggal_pembelian_barang);
+    setValue("id_perusahaan", data.id_perusahaan);
     setValue("lokasi_barang", data.lokasi_barang);
     document.getElementById("my_modal_1").showModal(); // Buka modal
   };
 
   //Function update data
+  console.log(currentData);
   const onUpdate = async (data) => {
     console.log("Data yang dikirim:", data);
     console.log("ID barang:", currentData.id_barang);
@@ -197,6 +200,60 @@ const InventoriAdmin = () => {
     formState: formStates,
   } = useForm();
 
+  //state untuk nomor seri
+  const [nomorSeri, setNomorSeri] = useState([]);
+
+  //use-form setup add serial number
+  const {
+    register: registersss,
+    handleSubmit: handleSubmitsss,
+    reset: resetss,
+    watch,
+  } = useForm();
+
+  // Tangkap perubahan pada field "jumlah"
+  const jumlah = watch("jumlah", 0);
+
+  // Efek samping untuk memperbarui nomor seri berdasarkan jumlah
+  useEffect(() => {
+    const updatedNomorSeri = Array.from({ length: jumlah }, () => "");
+    setNomorSeri(updatedNomorSeri);
+  }, [jumlah]);
+
+  // Function untuk menangani perubahan pada nomor seri
+  const handleSerialNumberChange = (index, value) => {
+    const updatedNomorSeri = [...nomorSeri];
+    updatedNomorSeri[index] = value;
+    setNomorSeri(updatedNomorSeri);
+  };
+
+  // Function untuk menambah serial number
+  const addSerialNumber = async () => {
+    if (!addSn) {
+      alert("Barang tidak dipilih atau data tidak tersedia.");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        `http://localhost:3000/api/barang/serial-number/${addSn}`,
+        {
+          nomor_seri: nomorSeri, // nomorSeri harus array
+        }
+      );
+
+      if (response.status === 201) {
+        alert("Serial Number berhasil ditambahkan!");
+        reset();
+        document.getElementById("my_modal_4").close(); // Tutup modal
+        getData(); // Refresh data barang
+      }
+    } catch (error) {
+      console.error("Gagal menambahkan serial number:", error);
+      alert("Gagal menambahkan serial number. Silahkan coba lagi.");
+    }
+  };
+
   return (
     <>
       {/* Layout Utama */}
@@ -294,7 +351,10 @@ const InventoriAdmin = () => {
                     <td className="px-4 py-3">
                       <button
                         className="btn text-white"
-                        onClick={() => handleSerialNumberClick(data.id_barang)}
+                        onClick={() => {
+                          handleSerialNumberClick(data.id_barang);
+                          setAddSn(data.id_barang);
+                        }}
                       >
                         Open SN
                         <IoOpenOutline className="h-[20px] text-white" />
@@ -442,7 +502,13 @@ const InventoriAdmin = () => {
               Serial Number
             </h1>
             <div className="flex flex-row gap-2">
-              <Link className="font-poppins text-white bg-black px-2 py-1 rounded-md">
+              <Link
+                className="font-poppins text-white bg-black px-2 py-1 rounded-md"
+                onClick={() => {
+                  document.getElementById("my_modal_2").close();
+                  document.getElementById("my_modal_4").showModal();
+                }}
+              >
                 Add
               </Link>
               <button
@@ -499,8 +565,7 @@ const InventoriAdmin = () => {
       </dialog>
       {/* Edit Serial Number Modal */}
       <dialog id="my_modal_3" className="modal">
-        <div className="modal-box">
-          <h1>Edit Serial Number</h1>
+        <div className="modal-box bg-white text-black font-poppins">
           <form onSubmit={handleSubmits(onSubmitSerialNumber)}>
             {/* Nama */}
             <label
@@ -530,12 +595,12 @@ const InventoriAdmin = () => {
               <option value="Loaned">Loaned</option>
             </select>
             <div className="modal-action">
-              <button type="submit" className="btn">
+              <button type="submit" className="btn text-white">
                 Submit
               </button>
               <button
                 type="button"
-                className="btn"
+                className="btn text-white"
                 onClick={() => {
                   document.getElementById("my_modal_3").close();
                   document.getElementById("my_modal_2").showModal();
@@ -544,6 +609,65 @@ const InventoriAdmin = () => {
                 Cancel
               </button>
             </div>
+          </form>
+        </div>
+      </dialog>
+
+      {/* Modal Add Serial Number */}
+      <dialog id="my_modal_4" className="modal font-poppins">
+        <div className="modal-box bg-white text-black">
+          <h1>Add Serial Number</h1>
+          <form
+            onSubmit={handleSubmitsss(addSerialNumber)}
+            className="flex flex-col gap-3"
+          >
+            {/* Quantity */}
+            <label htmlFor="jumlah" className="text-[15px] font-poppins">
+              Quantity
+            </label>
+            <input
+              type="number"
+              {...registersss("jumlah", { required: true })}
+              className="w-full px-2 py-2 shadow-md rounded-md bg-white text-slate-600 text-[15px] outline-none font-medium mb-2"
+            />
+            {/* Serial Number */}
+            {Array.from({ length: jumlah }).map((_, index) => (
+              <div key={index}>
+                <label
+                  htmlFor={`nomor_seri_${index}`}
+                  className="text-[15px] font-poppins"
+                >
+                  Serial Number {index + 1}
+                </label>
+                <input
+                  type="text"
+                  {...registersss(`nomor_seri[${index}]`, { required: true })}
+                  value={nomorSeri[index] || ""}
+                  onChange={(e) =>
+                    handleSerialNumberChange(index, e.target.value)
+                  }
+                  className="w-full px-2 py-2 shadow-md rounded-md bg-white text-slate-600 text-[15px] outline-none font-medium mb-2"
+                />
+              </div>
+            ))}
+            {/* Submit and Cancel Buttons */}
+            <button
+              type="submit"
+              className="bg-black text-white py-1 rounded-md"
+            >
+              Submit
+            </button>
+            <button
+              type="button"
+              className="bg-black text-white py-1 rounded-md"
+              onClick={() => {
+                resetss();
+                document.getElementById("my_modal_4").close();
+                document.getElementById("my_modal_2").showModal();
+              }}
+            >
+              Cancel
+            </button>
           </form>
         </div>
       </dialog>

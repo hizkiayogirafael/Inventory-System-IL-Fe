@@ -38,13 +38,13 @@ const DashboardAdmin = () => {
               alt="Infinite Learning Indonesia"
             />
           </div>
-          <h1 className="font-poppins text-[25px] font-medium my-5 ">
+          <h1 className="font-poppins text-[25px] font-medium my-5 text-black">
             Main Feature
           </h1>
           {/* Inventory Menu */}
           <Link
             className="bg-black flex flex-row text-white font-poppins justify-between py-4 px-5 rounded-xl mb-3 shadow-lg items-center"
-            to="/InventoryAdm"
+            to="/InventoriAdmin"
           >
             Inventory - Management
             <IoOpenOutline className="h-[20px]" />

@@ -18,7 +18,7 @@ const Register = () => {
   const getOptions = async () => {
     const response = await axios.get("http://localhost:3000/options");
     setDivisi(response.data.divisi);
-    setPerusahaan(response.data.perusahan);
+    setPerusahaan(response.data.perusahaan);
   };
 
   const onSubmit = async (data, e) => {
@@ -48,7 +48,7 @@ const Register = () => {
   return (
     <>
       {/* Layout Utama */}
-      <div className="w-screen h-screen flex flex-col font-poppins justify-between py-8 items-center">
+      <div className="w-screen h-screen flex flex-col font-poppins justify-between py-8 items-center bg-white">
         {/* Form Register */}
         <form
           onSubmit={handleSubmit(onSubmit)}
@@ -57,50 +57,54 @@ const Register = () => {
           <h1 className="flex justify-center font-bold text-[20px] text-black">
             Register
           </h1>
-          <p className="text-[12px] flex justify-center mb-2">
+          <p className="text-[12px] flex justify-center mb-2 text-black">
             Please Fill in Register Information
           </p>
           <div className="flex gap-4">
             <div className="w-[50%]">
               {/* Name */}
-              <label className="text-[13px] font-medium">Name</label>
+              <label className="text-[13px] font-medium text-black">Name</label>
               <input
                 type="text"
                 {...register("nama", { required: true })}
-                className="w-full px-2 py-2 border border-stone-950 rounded-md text-[12px] font-medium"
+                className="w-full px-2 py-2 border border-stone-950 bg-white text-black rounded-md text-[12px] font-medium"
               />
               {errors.name && (
                 <p className="text-red-500 text-[10px]">Name is required</p>
               )}
 
               {/* Email */}
-              <label className="text-[13px] font-medium">Email</label>
+              <label className="text-[13px] font-medium text-black">
+                Email
+              </label>
               <input
                 type="email"
                 {...register("email", { required: true })}
-                className="w-full px-2 py-2 border border-stone-950 rounded-md text-[12px] font-medium mb-3"
+                className="w-full px-2 py-2 border bg-white text-black border-stone-950 rounded-md text-[12px] font-medium mb-3"
               />
               {errors.email && (
                 <p className="text-red-500 text-[10px]">Email is required</p>
               )}
 
               {/* Phone */}
-              <label className="text-[13px] font-medium">Phone</label>
+              <label className="text-[13px] font-medium text-black">
+                Phone
+              </label>
               <input
                 type="text"
                 {...register("telepon", { required: true })}
-                className="w-full px-2 py-2 border border-stone-950 rounded-md text-[12px] font-medium mb-3"
+                className="w-full px-2 py-2 border border-stone-950 bg-white text-black rounded-md text-[12px] font-medium mb-3"
               />
               {errors.phone && (
                 <p className="text-red-500 text-[10px]">Phone is required</p>
               )}
 
               {/* Nik */}
-              <label className="text-[13px] font-medium">Nik</label>
+              <label className="text-[13px] font-medium text-black">Nik</label>
               <input
                 type="text"
                 {...register("nik", { required: true })}
-                className="w-full px-2 py-2 border border-stone-950 rounded-md text-[12px] font-medium mb-3"
+                className="w-full px-2 py-2 border border-stone-950 bg-white text-black rounded-md text-[12px] font-medium mb-3"
               />
               {errors.nik && (
                 <p className="text-red-500 text-[10px]">Nik is required</p>
@@ -108,10 +112,12 @@ const Register = () => {
             </div>
             <div className="w-[50%]">
               {/* Division */}
-              <label className="text-[13px] font-medium">Division</label>
+              <label className="text-[13px] font-medium text-black">
+                Division
+              </label>
               <select
                 {...register("id_divisi", { required: true })}
-                className="w-full px-2 py-2 border border-stone-950 rounded-md text-[12px] font-medium"
+                className="w-full px-2 py-2 border border-stone-950 bg-white text-black rounded-md text-[12px] font-medium"
               >
                 {errors.division && (
                   <p className="text-red-500 text-[10px]">
@@ -129,10 +135,12 @@ const Register = () => {
               </select>
 
               {/* Company */}
-              <label className="text-[13px] font-medium">Company</label>
+              <label className="text-[13px] font-medium text-black">
+                Company
+              </label>
               <select
                 {...register("id_perusahaan", { required: true })}
-                className="w-full px-2 py-2 border border-stone-950 rounded-md text-[12px] font-medium mb-3"
+                className="w-full px-2 py-2 border border-stone-950 bg-white text-black rounded-md text-[12px] font-medium mb-3"
               >
                 {errors.company && (
                   <p className="text-red-500 text-[10px]">
@@ -153,11 +161,13 @@ const Register = () => {
               )}
 
               {/* Password */}
-              <label className="text-[13px] font-medium">Password</label>
+              <label className="text-[13px] font-medium text-black">
+                Password
+              </label>
               <input
                 type="password"
                 {...register("password", { required: true })}
-                className="w-full px-2 py-2 border border-stone-950 rounded-md text-[12px] font-medium mb-3"
+                className="w-full px-2 py-2 border border-stone-950 bg-white text-black rounded-md text-[12px] font-medium mb-3"
               />
               {errors.password && (
                 <p className="text-red-500 text-[10px]">Password is required</p>
