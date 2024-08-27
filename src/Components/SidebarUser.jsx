@@ -61,6 +61,7 @@ const SidebarUser = () => {
         </div>
         <div className="flex flex-col w-full pb-5">
           <Link
+            to="/"
             className="flex flex-row gap-3 text-[20px] px-10 mx-5 pb-2 items-center "
             onClick={handleLogout}
           >

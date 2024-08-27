@@ -5,6 +5,8 @@ import { CgProfile } from "react-icons/cg";
 import SidebarAdmin from "../../Components/SidebarAdmin";
 import { IoMdAddCircle } from "react-icons/io";
 import axios from "axios";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 
 const UserAdm = () => {
   //state untuk menampung data user
@@ -51,6 +53,73 @@ const UserAdm = () => {
     }
   };
 
+  //useForm untuk setup form update
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    formState: { errors },
+  } = useForm();
+  const navigate = useNavigate();
+
+  //submit untuk form update
+  const onSubmit = async (data) => {
+    try {
+      // Pastikan id dimasukkan ke dalam data yang dikirim ke backend
+      if (!data.id) {
+        throw new Error("User ID is required for updating");
+      }
+
+      await axios.put(`http://localhost:3000/api/users/${data.id}`, data);
+      getData(); // Refresh data setelah update
+      reset();
+      document.getElementById("my_modal_1").close(); // Tutup modal jika berhasil
+      navigate("/UserAdm"); // Redirect setelah submit berhasil
+    } catch (error) {
+      console.log(error);
+      // Jika terjadi kesalahan, Anda bisa menunjukkan pesan kesalahan di UI
+    }
+  };
+
+  //state menampung data sebelumnya / current data
+  const [currentData, setCurrentData] = useState();
+
+  //setValue saat open modal edit
+  const openEditModal = (data) => {
+    setCurrentData(data);
+    setValue("id", data.id_user); // Pastikan id disertakan
+    setValue("nama", data.nama);
+    setValue("email", data.email);
+    setValue("telepon", data.telepon);
+    setValue("nik", data.nik);
+    setValue("id_divisi", data.id_divisi);
+    setValue("id_perusahaan", data.id_perusahaan);
+    setValue("approved", data.approved); // Set the status (approved) value
+    document.getElementById("my_modal_1").showModal(); // Buka modal
+  };
+
+  //state untuk divisi dan perusahaan
+  const [divisi, setDivisi] = useState([]);
+  const [perusahaan, setPerusahaan] = useState([]);
+
+  //getOption untuk divisi dan perusahaan
+  const getOptions = async () => {
+    try {
+      const response = await axios.get("http://localhost:3000/options");
+      console.log(response.data);
+      setPerusahaan(response.data.perusahaan);
+      setDivisi(response.data.divisi);
+    } catch (error) {
+      console.error("Gagal mengambil data opsi:", error);
+    }
+  };
+
+  //useEffect untuk menjjalan kembali setelah render
+  useEffect(() => {
+    getOptions();
+  }, []);
+
   return (
     <>
       {/* Layout Utama */}
@@ -86,7 +155,7 @@ const UserAdm = () => {
               User List
             </h1>
             <Link
-              className="bg-black text-white flex flex-row items-center gap-2 rounded-xl px-5 py-1 shadow-lg"
+              className="bg-black text-white flex flex-row items-center gap-2 rounded-xl px-5 py-1 shadow-lg hover:shadow-2xl hover:bg-gray-600"
               to="/AddUser"
             >
               Add User
@@ -131,8 +200,11 @@ const UserAdm = () => {
                         <span>Approved</span>
                       )}
                     </td>
-                    <td className="px-4 py-3">
-                      <button className="text-white bg-black px-3 rounded-md py-2 hover:text-blue-800">
+                    <td className="px-4 py-3 flex flex-row">
+                      <button
+                        className="text-white bg-black px-3 rounded-md py-2 hover:text-blue-800"
+                        onClick={() => openEditModal(user)}
+                      >
                         Edit
                       </button>
                       <button
@@ -149,6 +221,128 @@ const UserAdm = () => {
           </div>
         </div>
       </div>
+      {/* Modal Update User */}
+      <dialog id="my_modal_1" className="modal">
+        <div className="modal-box bg-white font-poppins text-black">
+          <h1 className="text-[20px] font-medium text-center">Update User</h1>
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
+            {/* Nama */}
+            <label
+              htmlFor="nama"
+              className="flex text-[15px] font-poppins mb-3 text-black"
+            >
+              Name
+            </label>
+            <input
+              type="text"
+              {...register("nama", { required: true })}
+              className="w-full px-2 py-2 shadow-md rounded-md font-medium mb-2 bg-white text-slate-600 text-[15px] outline-none"
+            />
+            {/* Email */}
+            <label
+              htmlFor="email"
+              className="flex text-[15px] font-poppins mb-3 text-black"
+            >
+              Email
+            </label>
+            <input
+              type="email"
+              {...register("email", { required: true })}
+              className="w-full px-2 py-2 shadow-md rounded-md font-medium mb-2 bg-white text-slate-600 text-[15px] outline-none"
+            />
+            {errors.email && (
+              <p className="text-red-500 text-[10px]">Email is required</p>
+            )}
+            {/* Phone */}
+            <label className="flex text-[15px] font-poppins mb-3 text-black">
+              Phone
+            </label>
+            <input
+              type="text"
+              {...register("telepon", { required: true })}
+              className="w-full px-2 py-2 shadow-md rounded-md font-medium mb-2 bg-white text-slate-600 text-[15px] outline-none"
+            />
+            {errors.phone && (
+              <p className="text-red-500 text-[10px]">Phone is required</p>
+            )}
+            {/* Nik */}
+            <label className="flex text-[15px] font-poppins mb-3 text-black">
+              Nik
+            </label>
+            <input
+              type="text"
+              {...register("nik", { required: true })}
+              className="w-full px-2 py-2 shadow-md rounded-md font-medium mb-2 bg-white text-slate-600 text-[15px] outline-none"
+            />
+            {errors.nik && (
+              <p className="text-red-500 text-[10px]">Nik is required</p>
+            )}
+            {/* Division */}
+            <label className="flex text-[15px] font-poppins mb-3 text-black">
+              Division
+            </label>
+            <select
+              {...register("id_divisi", { required: true })}
+              className="w-full px-2 py-2 shadow-md rounded-md font-medium mb-2 bg-white text-slate-600 text-[15px] outline-none"
+            >
+              <option value="">Choose Division</option>
+              {divisi?.map((divisi, index) => (
+                <option key={index} value={divisi.id_divisi}>
+                  {divisi.nama_divisi}
+                </option>
+              ))}
+            </select>
+            {errors.division && (
+              <p className="text-red-500 text-[10px]">Division is required</p>
+            )}
+            {/* Company */}
+            <label className="flex text-[15px] font-poppins mb-3 text-black">
+              Company
+            </label>
+            <select
+              {...register("id_perusahaan", { required: true })}
+              className="w-full px-2 py-2 shadow-md rounded-md font-medium mb-2 bg-white text-slate-600 text-[15px] outline-none"
+            >
+              <option value="">Choose Company</option>
+              {perusahaan?.map((perusahaan, index) => (
+                <option key={index} value={perusahaan.id_perusahaan}>
+                  {perusahaan.nama_perusahaan}
+                </option>
+              ))}
+            </select>
+            {errors.company && (
+              <p className="text-red-500 text-[10px]">Company is required</p>
+            )}
+            {/* Status */}
+            <label className="flex text-[15px] font-poppins mb-3 text-black">
+              Status
+            </label>
+            <select
+              {...register("approved", { required: true })}
+              className="w-full px-2 py-2 shadow-md rounded-md font-medium mb-2 bg-white text-slate-600 text-[15px] outline-none"
+            >
+              <option value={0}>Pending</option>
+              <option value={1}>Approved</option>
+            </select>
+            {errors.status && (
+              <p className="text-red-500 text-[10px]">Status is required</p>
+            )}
+            {/* Submit Button */}
+            <button
+              type="submit"
+              className="bg-black text-white px-3 py-2 rounded-md mt-4"
+            >
+              Submit
+            </button>
+            <button
+              className="bg-black text-white px-3 py-2 rounded-md mt-3"
+              onClick={() => document.getElementById("my_modal_1").close()}
+            >
+              Cancel
+            </button>
+          </form>
+        </div>
+      </dialog>
     </>
   );
 };
