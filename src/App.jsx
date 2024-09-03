@@ -18,6 +18,7 @@ import InventoryUser from "./Pages/Client/InventoryUser";
 import { useAuth } from "./store/auth";
 import { jwtDecode } from "jwt-decode";
 import InventoriAdmin from "./Pages/Admin/InventoriAdmin";
+import FormLoan from "./Pages/Client/FormLoan";
 
 const App = () => {
   const { loginResponse } = useAuth();
@@ -55,6 +56,7 @@ const App = () => {
         <Route path="/InventoryUser" element={<InventoryUser />} />
         <Route path="/Loaning" element={<Loaning />} />
         <Route path="/ProfileUser" element={<ProfileUser />} />
+        <Route path="/FormLoan" element={<FormLoan />} />
       </Routes>
     );
   }

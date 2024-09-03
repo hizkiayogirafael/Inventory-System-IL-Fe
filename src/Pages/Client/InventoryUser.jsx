@@ -115,7 +115,10 @@ const InventoryUser = () => {
                   ))}
                 </select>
               </div>
-              <Link className="font-poppins bg-black text-white rounded-xl flex flex-row items-center gap-1 px-3">
+              <Link
+                className="font-poppins bg-black text-white rounded-xl flex flex-row items-center gap-1 px-3"
+                to="/FormLoan"
+              >
                 Add Loan
                 <IoMdAddCircle />
               </Link>
