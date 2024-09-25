@@ -26,6 +26,42 @@ const LoaningAdm = () => {
     getPeminjaman();
   }, []);
 
+  //function approve peminjaman
+  const approvePeminjaman = async (id_peminjaman) => {
+    try {
+      await axios.put(
+        `http://localhost:3000/api/peminjaman/approve/${id_peminjaman}`
+      );
+      getPeminjaman();
+    } catch (error) {
+      console.log("Gagal Menyetujui Peminjaman", error);
+    }
+  };
+
+  //function reject peminjaman
+  const rejectPeminjaman = async (id_peminjaman) => {
+    try {
+      await axios.put(
+        `http://localhost:3000/api/peminjaman/reject/${id_peminjaman}`
+      );
+      getPeminjaman();
+    } catch (error) {
+      console.log("gagal menolak peminjaman", error);
+    }
+  };
+
+  //menyelesaikan peminjaman
+  const completePeminjaman = async (id_peminjaman) => {
+    try {
+      await axios.put(
+        `http://localhost:3000/api/peminjaman/complete/${id_peminjaman}`
+      );
+      getPeminjaman();
+    } catch (error) {
+      console.log("Gagal menyelesaikan peminjaman", error);
+    }
+  };
+
   return (
     <>
       {/* Layout Utama */}
@@ -105,12 +141,35 @@ const LoaningAdm = () => {
                       {item?.status_peminjaman}
                     </td>
                     <td className="px-4 py-3 flex flex-row justify-center">
-                      <button className="text-white bg-black px-3 rounded-md py-2 hover:text-blue-800">
-                        Approve
-                      </button>
-                      <button className="ml-2 text-white bg-black px-3 rounded-md py-2 hover:text-red-800">
-                        Reject
-                      </button>
+                      {item?.id_status_peminjaman === 1 ? ( // Jika status peminjaman adalah 'Pending'
+                        <>
+                          <button
+                            className="text-white bg-black px-3 rounded-md py-2 hover:text-blue-800"
+                            onClick={() =>
+                              approvePeminjaman(item.id_peminjaman)
+                            }
+                          >
+                            Approve
+                          </button>
+                          <button
+                            className="ml-2 text-white bg-black px-3 rounded-md py-2 hover:text-red-800"
+                            onClick={() => rejectPeminjaman(item.id_peminjaman)}
+                          >
+                            Reject
+                          </button>
+                        </>
+                      ) : item?.id_status_peminjaman === 2 ? ( // Jika status peminjaman adalah 'Accepted'
+                        <button
+                          className="text-white bg-black px-3 rounded-md py-2 hover:text-green-800"
+                          onClick={() => completePeminjaman(item.id_peminjaman)}
+                        >
+                          Complete
+                        </button>
+                      ) : item?.id_status_peminjaman === 3 ? ( // Jika status peminjaman adalah 'Rejected'
+                        <span>Rejected</span>
+                      ) : item?.id_status_peminjaman === 4 ? ( // Jika status peminjaman adalah 'Completed'
+                        <span>Completed</span>
+                      ) : null}
                     </td>
                   </tr>
                 ))}
